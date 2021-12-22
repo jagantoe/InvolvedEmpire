@@ -1,7 +1,7 @@
 ﻿namespace InvolvedEmpireRemastered.UserInterfaces.Controllers
 {
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
     public class UserController: Controller
     {
         private readonly TokenProvider _tokenProvider;

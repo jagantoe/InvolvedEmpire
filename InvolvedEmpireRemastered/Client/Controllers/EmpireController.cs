@@ -2,7 +2,7 @@
 {
     [ApiController]
     [Authorize]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
     public class EmpireController : Controller, IEmpireClient
     {
         private readonly IEmpireService _empireService;
