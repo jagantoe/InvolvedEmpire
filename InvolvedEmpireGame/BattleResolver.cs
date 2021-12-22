@@ -52,6 +52,7 @@
             {
                 report.AttackSuccessful = true;
                 report.Winner = attacker.Name;
+                report.Loser = defender.Name;
                 report.GoldStolen = StealGold(attacker, defender);
                 report.MinersStolen = StealMiners(attacker, defender);
                 report.HousesBurnedDown = BurnHouses(defender);
@@ -59,6 +60,7 @@
             else
             {
                 report.Winner = defender.Name;
+                report.Loser = attacker.Name;
             }
             return report;
 

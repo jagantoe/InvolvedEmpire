@@ -30,7 +30,7 @@
                 {
                     while (losses > 0)
                     {
-                        if (Knights > 0 && losses > KnightStrength)
+                        if (Knights > 0 && losses >= KnightStrength)
                         {
                             Knights--;
                             losses -= KnightStrength;
@@ -38,9 +38,9 @@
                         
                         var footSoldiersLost = Random.Next(KnightStrength, KnightStrength * 2);
                         footSoldiersLost = footSoldiersLost > losses ? losses : footSoldiersLost;
-                        if (FootSoldiers > 0 && losses > 0)
+                        if (FootSoldiers >= footSoldiersLost && losses > 0)
                         {
-                            footSoldiersLost -= losses;
+                            FootSoldiers -= footSoldiersLost;
                             losses -= footSoldiersLost;
                         }
                     }
