@@ -11,7 +11,7 @@
 
         internal static BattleReport ResolveBattle(Empire attacker, Empire? defender)
         {
-            if (defender == null)
+            if (defender == null || attacker.Id == defender.Id)
             {
                 return new BattleReport()
                 {
