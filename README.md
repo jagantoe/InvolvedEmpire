@@ -34,7 +34,7 @@ The user has:
 - Password, a plaintext password used to generate the authentication token, the host should add all users with pregenerated passwords, by not allowing users to choose their password we don't need to be all to worried about security
 - SerializedEmpire, all the empires data
 
-Each empire is tied to a user that we use to authenticate
+Each empire is tied to a user that we use to authenticate.
 All the data we need to run the game is always loaded in memory to ensure the best performance.
 Should the server go down for any reason we would lose all that memory.
 To prevent that from happening we also save the state of each empire in the database.
