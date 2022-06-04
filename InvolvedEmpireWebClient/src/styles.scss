@@ -1,0 +1,368 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use "~@angular/material" as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$custom-warn: (
+  50 : #ffe0e9,
+  100 : #ffb3c8,
+  200 : #ff80a4,
+  300 : #ff4d80,
+  400 : #ff2664,
+  500 : #ff0049,
+  600 : #ff0042,
+  700 : #ff0039,
+  800 : #ff0031,
+  900 : #ff0021,
+  A100 : #ffffff,
+  A200 : #fff2f3,
+  A400 : #ffbfc4,
+  A700 : #ffa6ad,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  )
+);
+
+$InvolvedEmpireWebClient-primary: mat.define-palette(mat.$indigo-palette);
+$InvolvedEmpireWebClient-accent: mat.define-palette(mat.$green-palette, A200, A100, A400);
+// The warn palette is optional (defaults to red).
+$InvolvedEmpireWebClient-warn: mat.define-palette($custom-warn);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$InvolvedEmpireWebClient-theme: mat.define-light-theme((color: (primary: $InvolvedEmpireWebClient-primary,
+        accent: $InvolvedEmpireWebClient-accent,
+        warn: $InvolvedEmpireWebClient-warn,
+      ),
+    ));
+
+$custom-typography: mat.define-typography-config($font-family: '"Roboto Mono", "Roboto"',
+  );
+
+$custom-theme: mat.define-light-theme((typography: $custom-typography,
+    ));
+
+@include mat.core($custom-typography);
+@include mat.all-component-themes($custom-theme);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($InvolvedEmpireWebClient-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+
+$pageBg: #202124;
+$cardBg: #595b5e;
+$primary: #3f51b5;
+$accent: #69f0ae;
+$warn: #ff0049;
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.row {
+  display: flex !important;
+}
+
+.box {
+  flex: 1 !important;
+}
+
+.h-50 {
+  height: 50% !important;
+}
+
+.h-100 {
+  height: 100% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.flex-column {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.flex-grow {
+  flex-grow: 1 !important;
+}
+
+.overflow-auto {
+  overflow: auto !important;
+}
+
+.divider {
+  border-bottom: 2px solid black !important;
+  margin-bottom: 2px !important;
+}
+
+.margin-0 {
+  margin: 0 !important;
+}
+
+.margin-bottom {
+  margin-bottom: 1em !important;
+}
+
+.padding-0 {
+  padding: 0 !important;
+}
+
+.padding-bottom-0 {
+  padding-bottom: 0 !important;
+}
+
+.table-scroll {
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $warn rgba(245, 245, 245, 0.7);
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #F5F5F5;
+}
+
+.table-scroll::-webkit-scrollbar {
+  width: 5px;
+  background-color: #F5F5F5;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: $warn;
+}
+
+.mat-row:hover {
+  background:
+    linear-gradient(90deg, $warn, 1%, transparent),
+    linear-gradient(270deg, $warn, 1%, transparent),
+    linear-gradient(0deg, $warn, 1%, transparent),
+    linear-gradient(180deg, $warn, 1%, transparent);
+  cursor: pointer;
+}
+
+.mat-list-item:hover {
+  background:
+    linear-gradient(90deg, $warn, 1%, transparent),
+    linear-gradient(270deg, $warn, 1%, transparent),
+    linear-gradient(0deg, $warn, 1%, transparent),
+    linear-gradient(180deg, $warn, 1%, transparent);
+  cursor: pointer;
+}
+
+.primary-color {
+  color: mat.get-color-from-palette($InvolvedEmpireWebClient-primary) !important;
+}
+
+.accent-color {
+  color: mat.get-color-from-palette($InvolvedEmpireWebClient-accent) !important;
+}
+
+.warn-color {
+  color: mat.get-color-from-palette($InvolvedEmpireWebClient-warn) !important;
+}
+
+.infantry:before {
+  content: "⌧";
+}
+
+.archer:before {
+  content: "◬";
+}
+
+.knight:before {
+  content: "♞";
+}
+
+.dragon {
+  background-image: url(https://cdnb.artstation.com/p/assets/images/images/008/006/123/large/antonio-j-manzanedo-red-dragon-2.jpg?1509886639;);
+  background-size: cover;
+  background-position: center;
+  border-radius: 0px 300px 0px 0px;
+  margin-left: -100px;
+}
+
+.dragon-overlay {
+  grid-row: 1;
+  grid-column: 1;
+  align-items: center;
+  justify-content: end;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(0deg, black, transparent);
+  border-radius: 0px 300px 0px 0px;
+  color: white;
+  margin-left: -100px;
+}
+
+body {
+  background-color: $pageBg;
+}
+
+.flex {
+  display: flex;
+}
+
+.space-around {
+  justify-content: space-around;
+}
+
+.nice-card {
+  border-radius: 10px;
+  background: $cardBg;
+}
+
+.block {
+  padding: 15px;
+  flex-basis: 0;
+  flex-grow: 1;
+  margin: 10px 20px;
+}
+
+.bar {
+  height: 50%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.title {
+  text-align: left;
+  font-size: xxx-large;
+  font-weight: 500;
+  color: white;
+}
+
+.sub-title {
+  text-align: left;
+  font-size: xx-large;
+  font-weight: 500;
+  color: white;
+}
+
+.left-block {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding-right: 20px;
+  padding-top: 10px;
+}
+
+.right-block {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.block-bg {
+  background-color: white;
+}
+
+.mat-tab-header {
+  height: 0px;
+  border: 0px;
+}
+
+.mat-tab-body-wrapper {
+  height: 100%;
+}
+
+.grid {
+  display: grid;
+  flex-grow: 1;
+}
+
+.tile {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.bottom-card-bg {
+  background:
+    linear-gradient(045deg, $cardBg, 10%, transparent),
+    linear-gradient(135deg, $warn, 40%, transparent),
+    linear-gradient(180deg, $warn, 60%, transparent),
+    linear-gradient(225deg, $warn, 40%, transparent),
+    linear-gradient(315deg, $cardBg, 10%, transparent),
+}
+
+.structure-active {
+  filter: invert(1);
+}
+
+.table-bg {
+  background-color: $cardBg;
+}
+
+.army-unit {
+  overflow-wrap: anywhere;
+  margin-bottom: 0.5em;
+  line-height: 1em;
+}
+
+.rounded-list-item {
+  border-radius: 10px 10px 10px 10px
+}
+
+.reports-bg {
+  background: linear-gradient(90deg, gray, transparent);
+}
+
+.big-bold {
+  font-size: xx-large !important;
+  font-weight: bold !important;
+  padding-top: 0.5em !important;
+}
+
+.mat-row :first-child {
+  border-radius: 10px 0px 0px 10px;
+}
+
+.mat-row :last-child {
+  border-radius: 0px 10px 10px 0px;
+}

@@ -1,0 +1,26 @@
+<div class="bar">
+  <div class="block padding-bottom-0">
+    <game-info></game-info>
+  </div>
+  <div class="nice-card block">
+    <scoreboard></scoreboard>
+  </div>
+  <div class="nice-card block">
+    <combat-reports></combat-reports>
+  </div>
+</div>
+<mat-tab-group class="bar" [selectedIndex]="(currentView$ | async)">
+  <mat-tab label="empire">
+    <div class="left-block">
+      <empire-overview></empire-overview>
+    </div>
+  </mat-tab>
+  <mat-tab label="none">
+  </mat-tab>
+  <mat-tab label="combat">
+    <div class="right-block">
+      <combat-overview></combat-overview>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+<loading></loading>

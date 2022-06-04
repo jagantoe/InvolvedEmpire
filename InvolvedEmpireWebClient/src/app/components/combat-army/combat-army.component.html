@@ -1,0 +1,38 @@
+<div class="h-100 flex-column" *ngIf="armyReport.name != 'Dragon';else dragon">
+    <h1 class="primary-color" class="text-center big-bold">{{armyReport.name}}</h1>
+    <div class="row text-center divider">
+        <div class="box">
+            <span class="infantry">{{armyReport.infantry - armyReport.infantryLosses}}</span>(<span
+                class="accent-color">{{armyReport.infantry}}</span>-<span
+                class="warn-color">{{armyReport.infantryLosses}}</span>)
+        </div>
+        <div class="box">
+            <span class="archer">{{armyReport.archers - armyReport.archersLosses}}</span>(<span
+                class="accent-color">{{armyReport.archers}}</span>-<span
+                class="warn-color">{{armyReport.archersLosses}}</span>)
+        </div>
+        <div class="box">
+            <span class="knight">{{armyReport.knights - armyReport.knightsLosses}}</span>(<span
+                class="accent-color">{{armyReport.knights}}</span>-<span
+                class="warn-color">{{armyReport.knightsLosses}}</span>)
+        </div>
+    </div>
+    <div class="flex-grow text-center overflow-auto" [style.font-size]="fontSize">
+        <div class="army-unit">
+            <span>{{infantryArmy}}</span><span class="warn-color">{{infantryArmyLosses}}</span>
+        </div>
+        <div class="army-unit">
+            <span>{{archerArmy}}</span><span class="warn-color">{{archerArmyLosses}}</span>
+        </div>
+        <div class="army-unit">
+            <span>{{knightArmy}}</span><span class="warn-color">{{knightArmyLosses}}</span>
+        </div>
+    </div>
+</div>
+<ng-template #dragon>
+    <div class="h-100 flex-column">
+        <h1 class="text-center margin-0 big-bold">{{armyReport.name}}</h1>
+        <h2 class="text-center">Health: {{armyReport.dragonHPBefore}} → {{armyReport.dragonHPAfter}}</h2>
+        <h2 class="text-center">Damage dealt: <span class="bold">{{armyReport.dragonHPLost}}</span></h2>
+    </div>
+</ng-template>

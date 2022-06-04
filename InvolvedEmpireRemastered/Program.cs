@@ -50,9 +50,11 @@ builder.Services.AddAuthentication(x =>
 // Cors
 builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
 {
-    builder.AllowAnyOrigin()
-           .AllowAnyMethod()
-           .AllowAnyHeader();
+    builder
+        .WithOrigins("***place dashboard url here***")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
 }));
 
 
@@ -61,10 +63,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 app.UseOpenApi();
 app.UseSwaggerUi3();
-app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
+
 app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -72,7 +76,8 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-    endpoints.MapHub<EmpireHub>("/hub/InvolvedEmpire");
 });
+app.MapHub<EmpireHub>("/hub/InvolvedEmpire");
+app.MapHub<DashboardHub>("/hub/Dashboard");
 
 app.Run();

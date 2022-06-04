@@ -1,0 +1,17 @@
+<div class="overlay" *ngIf="!(connected$ | async);else loading">
+    <app-looping-rhombuses-spinner [animationDuration]="2000" [rhombusSize]="60" [color]="'#ff0049'">
+    </app-looping-rhombuses-spinner>
+    <h1 class="warn-color">Connecting...</h1>
+
+    <div *ngIf="reconnectTimer$ | async">
+        <button mat-flat-button (click)="reconnect()" color="warn">RECONNECT</button>
+    </div>
+</div>
+<ng-template #loading>
+    <div class="overlay" *ngIf="!(game$ | async)">
+        <app-radar-spinner [animationDuration]="2000" [color]="'#ff0049'">
+        </app-radar-spinner>
+        <h1 class="warn-color">Connected</h1>
+        <h1 class="warn-color">Waiting on data</h1>
+    </div>
+</ng-template>

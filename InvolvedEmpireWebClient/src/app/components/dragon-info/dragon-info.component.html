@@ -1,0 +1,18 @@
+<div class="h-100 flex-column text-center" *ngIf="(dragon$ | async) as dragon">
+    <div class="grid">
+        <div class="tile">
+            <div class="flex-grow dragon h-100">
+            </div>
+        </div>
+        <!-- Background credit to Antonio J. Manzanedo: https://www.artstation.com/ajmanzanedo -->
+        <div class="tile dragon-overlay">
+            <h2>Dragon</h2>
+            <h3 class="margin-0">Health: {{dragon.currentHealth}}/{{dragon.maxHealth}}</h3>
+            <mat-progress-bar class="margin-bottom w-50" mode="determinate" color="warn"
+                [value]="dragon.currentHealth / dragon.maxHealth * 100">
+            </mat-progress-bar>
+            <h3 class="margin-0">Gold: {{dragon.goldHoard}}</h3>
+            <h3 *ngIf="dragon.nextTarget == 0">Next Target: {{dragon.nextTargetName}}({{dragon.nextTarget}})</h3>
+        </div>
+    </div>
+</div>

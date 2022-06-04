@@ -1,0 +1,7 @@
+<div class="h-100 flex-column">
+    <div *ngIf="(game$ | async) as game">
+        <p class="title">{{game.name}}</p>
+        <p class="sub-title">{{game.day}}☀</p>
+    </div>
+    <dragon-info class="flex-grow"></dragon-info>
+</div>

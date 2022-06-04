@@ -1,4 +1,4 @@
-﻿namespace InvolvedEmpireRemastered.UserInterfaces.SignalR
+﻿namespace InvolvedEmpireRemastered.Client.SignalR
 {
     [Authorize]
     public class EmpireHub : Hub<IEmpireClient>
@@ -13,48 +13,64 @@
         public override Task OnConnectedAsync()
         {
             Groups.AddToGroupAsync(Context.ConnectionId, UserId.ToString());
+            return LoadEmpireOnConnect();
+        }
 
+        private async Task<Task> LoadEmpireOnConnect()
+        {
+            await _empireService.LoadEmpire(UserId, CancellationToken.None);
             return base.OnConnectedAsync();
         }
 
-        public async Task<Empire> GetMyEmpire()
+        public IEnumerable<Structure> GetStructures()
         {
-            return await _empireService.GetEmpire(UserId, CancellationToken.None);
+            return _empireService.GetStructures();
         }
-
-        public async Task<IEnumerable<Empire>> GetAllEmpires()
+        public Dragon GetDragon()
         {
-            return await _empireService.GetAllEmpires(CancellationToken.None);
+            return _empireService.GetDragon();
         }
-
-        public async Task<PriceList> GetPriceList()
+        public async ValueTask<PriceList> GetPriceList()
         {
             return await _empireService.GetPriceList(UserId, CancellationToken.None);
         }
-
-        public async Task<Transaction> BuyHouse(int amount)
+        public async ValueTask<IEnumerable<EmpireReport>> GetOtherEmpires()
         {
-            return await _empireService.BuyHouse(UserId, amount, CancellationToken.None);
+            return await _empireService.GetOtherEmpires(UserId, CancellationToken.None);
         }
 
-        public async Task<Transaction> EmployMiners(int amount)
+        public async ValueTask<Transaction> BuyHouses(int amount)
+        {
+            return await _empireService.BuyHouses(UserId, amount, CancellationToken.None);
+        }
+        public async ValueTask<Transaction> EmployMiners(int amount)
         {
             return await _empireService.EmployMiners(UserId, amount, CancellationToken.None);
         }
-
-        public async Task<Transaction> TrainFootSoldiers(int amount)
+        public async ValueTask<Transaction> TrainInfantry(int amount)
         {
-            return await _empireService.TrainFootSoldiers(UserId, amount, CancellationToken.None);
+            return await _empireService.BuyInfantry(UserId, amount, CancellationToken.None);
+        }
+        public async ValueTask<Transaction> TrainArchers(int amount)
+        {
+            return await _empireService.BuyArchers(UserId, amount, CancellationToken.None);
+        }
+        public async ValueTask<Transaction> TrainKnights(int amount)
+        {
+            return await _empireService.BuyKnights(UserId, amount, CancellationToken.None);
+        }
+        public async ValueTask<Transaction> BuyStructure(string name)
+        {
+            return await _empireService.BuyStructure(UserId, name, CancellationToken.None);
         }
 
-        public async Task<Transaction> TrainKnights(int amount)
+        public async Task Attack(int targetId)
         {
-            return await _empireService.TrainKnights(UserId, amount, CancellationToken.None);
+            await _empireService.Attack(UserId, targetId, CancellationToken.None);
         }
-
-        public async Task<BattleReport> Attack(int targetId)
+        public async Task AttackDragon()
         {
-            return await _empireService.Attack(UserId, targetId, CancellationToken.None);
+            await _empireService.AttackDragon(UserId, CancellationToken.None);
         }
     }
 }

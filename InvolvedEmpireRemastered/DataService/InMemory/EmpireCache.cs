@@ -2,41 +2,31 @@
 {
     public class EmpireCache
     {
-        private Dictionary<int, Empire> Empires { get; set; } = new Dictionary<int,Empire>();
+        private GameState GameState;
 
-        public Empire? this[int i] => Empires.GetValueOrDefault(i);
+        public Empire? this[int i] => GameState[i];
 
-        private void Reset()
+        public void LoadGame(Game game)
         {
-            Empires = new Dictionary<int,Empire>();
-        }
-
-        public IEnumerable<Empire> GetAllEmpires()
-        {
-            return Empires.Values;
-        }
-        public Dictionary<int, Empire> GetAllUserEmpires()
-        {
-            return Empires;
-        }
-
-        public void AddEmpire(User user)
-        {
-            if (user != null && !Empires.ContainsKey(user.Id))
+            var gamestate = JsonSerializer.Deserialize<GameState>(game.SerializedGame)!;
+            gamestate.Id = game.Id;
+            gamestate.Active = false;
+            GameState = gamestate;
+            GameState.Reset();
+            foreach (var userGame in game.UserGames)
             {
-                var empire = JsonSerializer.Deserialize<Empire>(user.SerializedEmpire);
-                empire.Id = user.Id;
-                Empires.Add(user.Id, empire);
+                GameState.AddEmpire(JsonSerializer.Deserialize<Empire>(userGame.SerializedEmpire)!);
             }
         }
 
-        public void LoadEmpires(IEnumerable<User> users)
+        public GameState GetGameState()
         {
-            Reset();
-            foreach (var user in users)
-            {
-                Empires.Add(user.Id, JsonSerializer.Deserialize<Empire>(user.SerializedEmpire));
-            }
+            return GameState;
+        }
+
+        public void AddEmpire(UserGame userGame)
+        {
+            GameState.AddEmpire(JsonSerializer.Deserialize<Empire>(userGame.SerializedEmpire)!);
         }
     }
 }

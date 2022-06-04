@@ -1,0 +1,13 @@
+<div class="row h-100 block-bg radius bottom-card-bg" *ngIf="(report$ | async) as report">
+    <div class="box">
+        <combat-army [armyReport]="report.attacker"></combat-army>
+    </div>
+
+    <div class="box">
+        <combat-info [report]="report"></combat-info>
+    </div>
+
+    <div class="box">
+        <combat-army [armyReport]="report.defender"></combat-army>
+    </div>
+</div>

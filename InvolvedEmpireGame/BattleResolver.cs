@@ -1,107 +1,216 @@
-﻿namespace InvolvedEmpireGame
+﻿namespace InvolvedEmpireGame;
+
+public static class BattleResolver
 {
-    internal static class BattleResolver
+    private static int ArcherVsInfantryMultiplier = 2;
+    private static int KnightVsInfantryMultiplier = 5;
+    private static int KnightVsArcherMultiplier = 2;
+    // Siege on city or field
+    public static BattleReport Battle(Empire attacker, Empire defender, bool field)
     {
-        private static readonly Random Random = new Random();
-        private static double LosesRatio = 0.4;
-        private static double StealGoldRatio = 0.8;
-        private static double StealMinersRatio = 0.1;
-        private static double HouseBurnedRatio = 0.05;
-        private static int HouseBurnLimit = 5;
+        var (aInfantryDamage, aArcherDamage, aKnightDamage) = ArmyDamage(attacker.Army);
+        var (dInfantryDamage, dArcherDamage, dKnightDamage) = ArmyDamage(defender.Army);
 
-        internal static BattleReport ResolveBattle(Empire attacker, Empire? defender)
+        // True means attacker won
+        var attackerInfantryLosses = (dInfantryDamage + dArcherDamage * ArcherVsInfantryMultiplier + dKnightDamage * KnightVsInfantryMultiplier) / 5;
+        var attackerArcherLosses = (dInfantryDamage / ArcherVsInfantryMultiplier + dArcherDamage + dKnightDamage * KnightVsArcherMultiplier) / 5;
+        var attackerKnightLosses = (dInfantryDamage / KnightVsInfantryMultiplier + dArcherDamage / KnightVsArcherMultiplier + dKnightDamage) / 5;
+
+        var defenderInfantryLosses = (aInfantryDamage + aArcherDamage * ArcherVsInfantryMultiplier + aKnightDamage * KnightVsInfantryMultiplier) / 5;
+        var defenderArcherLosses = (aInfantryDamage / ArcherVsInfantryMultiplier + aArcherDamage + aKnightDamage * KnightVsArcherMultiplier) / 5;
+        var defenderKnightLosses = (aInfantryDamage / KnightVsInfantryMultiplier + aArcherDamage / KnightVsArcherMultiplier + aKnightDamage) / 5;
+
+        var attackerReport = attacker.ArmyLosses(attackerInfantryLosses, attackerArcherLosses, attackerKnightLosses);
+        var defenderReport = defender.ArmyLosses(defenderInfantryLosses, defenderArcherLosses, defenderKnightLosses);
+
+        var attackerWins = defenderInfantryLosses + defenderArcherLosses + defenderKnightLosses > attackerInfantryLosses + attackerArcherLosses + attackerKnightLosses;
+        if (attackerWins)
         {
-            if (defender == null || attacker.Id == defender.Id)
+            int goldStolen = 0;
+            int minersStolen = 0;
+            if (!field)
             {
-                return new BattleReport()
+                var goldCarryCapacity = GoldCarryCapacity(attacker.Army);
+                goldStolen = defender.Gold >= goldCarryCapacity ? goldCarryCapacity : defender.Gold;
+                if (defender.Structures.Vault)
                 {
-                    Winner = "None",
-                    Loser = "None",
-                };
-            }
-
-            var attackerStrength = attacker.Army.ArmyStrength;
-            var defenderStrength = defender.Army.ArmyStrength;
-
-            if (attackerStrength <= 0)
-            {
-                return new BattleReport()
-                {
-                    Winner = "None",
-                    Loser = "None",
-                    Attacker = new ArmyReport(attacker.Name),
-                    Defender = new ArmyReport(defender.Name)
-                };
-            }
-
-            while (attackerStrength > 0 && defenderStrength > 0)
-            {
-                var attackRoll = Random.Next(attackerStrength) + 1;
-                var defenseRoll = Random.Next(defenderStrength) + 1;
-
-                attackerStrength -= defenseRoll;
-                defenderStrength -= attackRoll;
-            }
-
-            var report = new BattleReport();
-
-            report.Attacker = ApplyLosses(attacker, attackerStrength);
-            report.Defender = ApplyLosses(defender, defenderStrength);
-
-            if (attackerStrength > defenderStrength)
-            {
-                report.AttackSuccessful = true;
-                report.Winner = attacker.Name;
-                report.Loser = defender.Name;
-                report.GoldStolen = StealGold(attacker, defender);
-                report.MinersStolen = StealMiners(attacker, defender);
-                report.HousesBurnedDown = BurnHouses(defender);
-            }
-            else
-            {
-                report.Winner = defender.Name;
-                report.Loser = attacker.Name;
-            }
-            return report;
-
-            ArmyReport ApplyLosses(Empire empire, int remainingStrength)
-            {
-                var losses = (int)Math.Ceiling((empire.Army.ArmyStrength - remainingStrength) * LosesRatio);
-                
-                return empire.ArmyLosses(losses);
-            }
-
-            int StealGold(Empire attacker, Empire defender)
-            {
-                var maxGoldStolen = (int)Math.Ceiling(defender.Gold * StealGoldRatio);
-                var goldStolen = Random.Next(maxGoldStolen);
-                goldStolen = goldStolen > defender.Gold  ? defender.Gold: goldStolen;
-                defender.Gold -= goldStolen;
-                attacker.Gold += goldStolen;
-                return goldStolen;
-            }
-
-            int StealMiners(Empire attacker, Empire defender)
-            {
-                var maxMinersStolen = (int)Math.Ceiling(defender.Miners * StealMinersRatio);
-                var minersStolen = Random.Next(maxMinersStolen);
-                minersStolen = minersStolen > defender.Miners ? defender.Miners : minersStolen;
-                defender.Miners -= minersStolen;
-                attacker.Miners += minersStolen;
-                return minersStolen;
-            }
-
-            int BurnHouses(Empire defender)
-            {
-                var maxHousesBurned = (int)Math.Ceiling(defender.Houses * HouseBurnedRatio);
-                var housesBurnedDown = Random.Next(maxHousesBurned);
-                if (defender.Houses - housesBurnedDown > HouseBurnLimit)
-                {
-                    defender.Houses -= housesBurnedDown;
-                    return housesBurnedDown;
+                    var limit = defender.Gold > 500 ? defender.Gold / 5 : 500;
+                    var goldLeft = defender.Gold - goldStolen;
+                    if (goldLeft < 0) goldLeft = 0;
+                    if (goldLeft < limit)
+                    {
+                        goldStolen -= limit - goldLeft;
+                    }
                 }
-                return 0;
+                minersStolen = Random.Shared.Next(0, MinersCarryCapacity(attacker.Army) + 1);
+                attacker.AddGold(goldStolen);
+                defender.StealGold(goldStolen);
+                attacker.AddMiners(minersStolen);
+                defender.StealMiners(minersStolen);
             }
+            return new BattleReport()
+            {
+                AttackSuccessful = true,
+                Winner = attacker.Name,
+                Loser = defender.Name,
+                Type = field ? FieldType : SiegeType,
+                Attacker = attackerReport,
+                Defender = defenderReport,
+                GoldStolen = goldStolen,
+                MinersStolen = minersStolen
+            };
+        }
+        else
+        {
+            return new BattleReport()
+            {
+                AttackSuccessful = false,
+                Winner = defender.Name,
+                Loser = attacker.Name,
+                Type = field ? FieldType : SiegeType,
+                Attacker = attackerReport,
+                Defender = defenderReport,
+            };
         }
     }
+    private static (int, int, int) ArmyDamage(Army army)
+    {
+        return (
+            Random.Shared.Next(0, army.Infantry / 2) + army.Infantry,
+            Random.Shared.Next(0, army.Archers / 2) + army.Archers,
+            Random.Shared.Next(0, army.Knights / 2) + army.Knights
+            );
+    }
+    private static int GoldCarryCapacity(Army army)
+    {
+        return (army.Infantry * 5 + army.Archers * 2 + army.Knights * 15);
+    }
+    private static int MinersCarryCapacity(Army army)
+    {
+        return (army.Infantry + army.Archers + army.Knights) / 20;
+    }
+
+    #region Dragon
+    private static int ArcherDragonMultiplier = 3;
+    private static int KnightDragonMultiplier = 5;
+    private static int DragonWeakness = 13;
+    private static int DragonMaxGoldSteal = 300;
+    private static string FieldType = "Field";
+    private static string SiegeType = "Siege";
+    // Siege on dragon lair or field
+    public static BattleReport Battle(Empire empire, Dragon dragon, bool field)
+    {
+        var totalDamage = empire.Army.Infantry + empire.Army.Archers * ArcherDragonMultiplier + empire.Army.Knights * KnightDragonMultiplier;
+        if (totalDamage % DragonWeakness == 0)
+        {
+            totalDamage *= 2;
+        }
+        var (infantryLosses, archerLosses, knightLosses) = DragonDamage();
+
+        var dragonReport = dragon.TakeDamage(totalDamage);
+        var armyReport = empire.ArmyLosses(infantryLosses, archerLosses, knightLosses);
+
+        if (dragon.Alive)
+        {
+            var goldStolen = empire.Gold <= DragonMaxGoldSteal ? empire.Gold : DragonMaxGoldSteal;
+            empire.StealGold(goldStolen);
+            dragon.AddGold(goldStolen);
+            return new BattleReport()
+            {
+                AttackSuccessful = false,
+                Winner = "Dragon",
+                Loser = empire.Name,
+                Type = field ? FieldType : SiegeType,
+                Attacker = armyReport,
+                Defender = dragonReport,
+            };
+        }
+        else
+        {
+            var goldStolen = dragon.GoldHoard;
+            empire.AddGold(goldStolen);
+            dragon.Dead();
+
+            return new BattleReport()
+            {
+                AttackSuccessful = true,
+                Winner = empire.Name,
+                Loser = "Dragon",
+                Type = field ? FieldType : SiegeType,
+                Attacker = armyReport,
+                Defender = dragonReport,
+                GoldStolen = goldStolen,
+            };
+        }
+    }
+    // Dragon sieges city, never field
+    public static BattleReport Battle(Dragon dragon, Empire empire)
+    {
+        var totalDamage = empire.Army.Infantry + empire.Army.Archers * ArcherDragonMultiplier + empire.Army.Knights * KnightDragonMultiplier;
+        if (totalDamage % DragonWeakness == 0)
+        {
+            totalDamage *= 2;
+        }
+        var (infantryLosses, archerLosses, knightLosses) = DragonDamage();
+
+        var dragonReport = dragon.TakeDamage(totalDamage);
+        var armyReport = empire.ArmyLosses(infantryLosses, archerLosses, knightLosses);
+
+        if (dragon.Alive)
+        {
+            var goldStolen = empire.Gold <= DragonMaxGoldSteal ? empire.Gold : DragonMaxGoldSteal;
+            if (empire.Structures.Vault)
+            {
+                var limit = empire.Gold > 500 ? empire.Gold / 5 : 500;
+                var goldLeft = empire.Gold - goldStolen;
+                if (goldLeft < 0) goldLeft = 0;
+                if (goldLeft < limit)
+                {
+                    goldStolen -= limit - goldLeft;
+                }
+            }
+            empire.StealGold(goldStolen);
+            dragon.AddGold(goldStolen);
+            return new BattleReport()
+            {
+                AttackSuccessful = true,
+                Winner = "Dragon",
+                Loser = empire.Name,
+                Type = SiegeType,
+                Attacker = dragonReport,
+                Defender = armyReport,
+                GoldStolen = goldStolen,
+            };
+        }
+        else
+        {
+            var goldStolen = dragon.GoldHoard;
+            empire.AddGold(goldStolen);
+            dragon.Dead();
+
+            return new BattleReport()
+            {
+                AttackSuccessful = false,
+                Winner = empire.Name,
+                Loser = "Dragon",
+                Type = SiegeType,
+                Attacker = dragonReport,
+                Defender = armyReport,
+                GoldStolen = goldStolen,
+            };
+        }
+    }
+    private static (int, int, int) DragonDamage()
+    {
+        // Dragon infantry damage 5d10 + 10
+        // Dragon archer damage 3d10 + 10
+        // Dragon knight damage 1d10 + 10
+        return (
+            Random.Shared.Next(0, 51) + 10,
+            Random.Shared.Next(0, 31) + 10,
+            Random.Shared.Next(0, 11) + 10
+            );
+    }
+    #endregion
+
 }

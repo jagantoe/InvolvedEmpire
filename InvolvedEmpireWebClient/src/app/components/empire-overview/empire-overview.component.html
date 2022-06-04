@@ -1,0 +1,13 @@
+<div class="row h-100 block-bg radius bottom-card-bg" *ngIf="empire$| async as empire">
+    <div class="box">
+        <empire-info [empire]="empire"></empire-info>
+    </div>
+
+    <div class="box">
+        <empire-structures [structures]="empire.structures"></empire-structures>
+    </div>
+
+    <div class="box">
+        <empire-army [army]="empire.army"></empire-army>
+    </div>
+</div>
